@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power BI Enterprise Dashboard - Complete BI Solution</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #00b4c5;
+            --secondary-color: #f2c811;
+            --dark-color: #1e1e1e;
+            --light-color: #f8f9fa;
+            --success-color: #4caf50;
+            --danger-color: #f44336;
+            --warning-color: #ff9800;
+            --info-color: #2196f3;
+            --powerbi-purple: #f2c811;
+            --powerbi-dark: #1e1e1e;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: var(--light-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 2000px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: rgba(30, 30, 30, 0.95);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            border-bottom: 3px solid var(--powerbi-purple);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            color: var(--powerbi-purple);
+            animation: pulse 2s infinite;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(to right, var(--powerbi-purple), #fff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 600;
+        }
+
+        .powerbi-badge {
+            background: var(--powerbi-purple);
+            color: var(--dark-color);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        /* Power BI Service Status */
+        .service-status {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 15px;
+            border-radius: 8px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success-color);
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: flex;
+            gap: 20px;
+            min-height: calc(100vh - 150px);
+        }
+
+        /* Enhanced Sidebar */
+        .sidebar {
+            width: 280px;
+            background-color: rgba(30, 30, 30, 0.9);
+            border-radius: 12px;
+            padding: 20px 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            border-right: 2px solid var(--powerbi-purple);
+        }
+
+        .nav-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            color: var(--powerbi-purple);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            padding-left: 10px;
+            letter-spacing: 1px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--light-color);
+            text-decoration: none;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(242, 200, 17, 0.1);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(242, 200, 17, 0.2), transparent);
+            border-left: 3px solid var(--powerbi-purple);
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+            color: var(--powerbi-purple);
+        }
+
+        .badge {
+            position: absolute;
+            right: 15px;
+            background: var(--danger-color);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Power BI Toolbar */
+        .powerbi-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            background-color: rgba(30, 30, 30, 0.9);
+            border-radius: 12px;
+            padding: 15px 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid var(--powerbi-purple);
+        }
+
+        .tool-category {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .tool-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--light-color);
+            width: 42px;
+            height: 42px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tool-btn:hover {
+            background: var(--powerbi-purple);
+            color: var(--dark-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(242, 200, 17, 0.3);
+        }
+
+        .tool-btn.active {
+            background: var(--powerbi-purple);
+            color: var(--dark-color);
+            box-shadow: 0 0 10px rgba(242, 200, 17, 0.5);
+        }
+
+        /* Dashboard Workspace */
+        .dashboard-workspace {
+            flex: 1;
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        /* Power BI Visualization Cards */
+        .pbiviz-card {
+            background: rgba(40, 40, 40, 0.9);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(242, 200, 17, 0.1);
+            height: 350px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pbiviz-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(242, 200, 17, 0.1);
+            border-color: rgba(242, 200, 17, 0.3);
+        }
+
+        .viz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(242, 200, 17, 0.2);
+        }
+
+        .viz-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--powerbi-purple);
+        }
+
+        .viz-content {
+            flex: 1;
+            position: relative;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Power BI Filters Panel */
+        .filters-panel {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border-top: 2px solid var(--powerbi-purple);
+        }
+
+        .filter-group {
+            margin-bottom: 15px;
+        }
+
+        .filter-title {
+            font-size: 0.9rem;
+            color: var(--powerbi-purple);
+            margin-bottom: 8px;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .filter-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-option:hover {
+            background: rgba(242, 200, 17, 0.1);
+            border-color: var(--powerbi-purple);
+        }
+
+        .filter-option.active {
+            background: var(--powerbi-purple);
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+
+        /* Power BI Data Model Viewer */
+        .data-model-viewer {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .model-entities {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .entity-card {
+            background: rgba(40, 40, 40, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(242, 200, 17, 0.2);
+            min-width: 200px;
+        }
+
+        .entity-name {
+            color: var(--powerbi-purple);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .entity-fields {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        /* KPI Indicators */
+        .kpi-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border-left: 4px solid var(--powerbi-purple);
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--powerbi-purple);
+        }
+
+        .kpi-change {
+            font-size: 0.9rem;
+            color: var(--success-color);
+        }
+
+        .kpi-change.negative {
+            color: var(--danger-color);
+        }
+
+        /* Power BI Export Options */
+        .export-panel {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .export-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .export-option {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .export-option:hover {
+            background: rgba(242, 200, 17, 0.1);
+            border-color: var(--powerbi-purple);
+            transform: translateY(-3px);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1400px) {
+            .dashboard-workspace {
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .dashboard-workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .powerbi-toolbar {
+                justify-content: center;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .visible {
+            display: block !important;
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease forwards;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <div>
+                    <h1>Power BI Enterprise<span class="powerbi-badge">PRO</span></h1>
+                    <div class="service-status">
+                        <div class="status-indicator">
+                            <div class="status-dot"></div>
+                            <span>Power BI Service: Online</span>
+                        </div>
+                        <span>Last refresh: 5 min ago</span>
+                    </div>
+                </div>
+            </div>
+            <div class="user-actions">
+                <button class="btn btn-primary" id="publishToService">
+                    <i class="fas fa-cloud-upload-alt"></i> Publish to Power BI Service
+                </button>
+                <button class="btn btn-secondary" id="shareDashboard">
+                    <i class="fas fa-share-alt"></i> Share Dashboard
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="nav-section">
+                    <div class="section-title">Workspaces</div>
+                    <div class="nav-item active" data-page="sales-workspace">
+                        <i class="fas fa-building"></i>
+                        <span>Sales Analytics</span>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="nav-item" data-page="finance-workspace">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Financial Reports</span>
+                    </div>
+                    <div class="nav-item" data-page="operations-workspace">
+                        <i class="fas fa-cogs"></i>
+                        <span>Operations Dashboard</span>
+                    </div>
+                    <div class="nav-item" data-page="hr-workspace">
+                        <i class="fas fa-users"></i>
+                        <span>HR Analytics</span>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="section-title">Data Sources</div>
+                    <div class="nav-item" data-action="sql-server">
+                        <i class="fas fa-database"></i>
+                        <span>SQL Server</span>
+                    </div>
+                    <div class="nav-item" data-action="excel-files">
+                        <i class="fas fa-file-excel"></i>
+                        <span>Excel Files</span>
+                    </div>
+                    <div class="nav-item" data-action="sharepoint">
+                        <i class="fas fa-cloud"></i>
+                        <span>SharePoint Lists</span>
+                    </div>
+                    <div class="nav-item" data-action="azure-sql">
+                        <i class="fab fa-microsoft"></i>
+                        <span>Azure SQL DB</span>
+                    </div>
+                    <div class="nav-item" data-action="web-api">
+                        <i class="fas fa-globe"></i>
+                        <span>Web API</span>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="section-title">Power BI Tools</div>
+                    <div class="nav-item" data-tool="power-query">
+                        <i class="fas fa-code"></i>
+                        <span>Power Query Editor</span>
+                    </div>
+                    <div class="nav-item" data-tool="dax-editor">
+                        <i class="fas fa-calculator"></i>
+                        <span>DAX Editor</span>
+                    </div>
+                    <div class="nav-item" data-tool="data-model">
+                        <i class="fas fa-project-diagram"></i>
+                        <span>Data Model Viewer</span>
+                    </div>
+                    <div class="nav-item" data-tool="performance">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Performance Analyzer</span>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="section-title">Admin</div>
+                    <div class="nav-item" data-admin="gateway">
+                        <i class="fas fa-server"></i>
+                        <span>Gateway Management</span>
+                    </div>
+                    <div class="nav-item" data-admin="capacity">
+                        <i class="fas fa-microchip"></i>
+                        <span>Capacity Monitoring</span>
+                    </div>
+                    <div class="nav-item" data-admin="audit">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Audit Logs</span>
+                    </div>
+                    <div class="nav-item" data-admin="security">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Row Level Security</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Power BI Toolbar -->
+                <div class="powerbi-toolbar">
+                    <div class="tool-category">
+                        <span>Visualizations:</span>
+                        <button class="tool-btn" data-viz="bar" title="Bar Chart">
+                            <i class="fas fa-chart-bar"></i>
+                        </button>
+                        <button class="tool-btn" data-viz="line" title="Line Chart">
+                            <i class="fas fa-chart-line"></i>
+                        </button>
+                        <button class="tool-btn active" data-viz="pie" title="Pie Chart">
+                            <i class="fas fa-chart-pie"></i>
+                        </button>
+                        <button class="tool-btn" data-viz="scatter" title="Scatter Plot">
+                            <i class="fas fa-braille"></i>
+                        </button>
+                        <button class="tool-btn" data-viz="map" title="Map">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </button>
+                        <button class="tool-btn" data-viz="table" title="Table">
+                            <i class="fas fa-table"></i>
+                        </button>
+                        <button class="tool-btn" data-viz="kpi" title="KPI">
+                            <i class="fas fa-bullseye"></i>
+                        </button>
+                    </div>
+
+                    <div class="tool-category">
+                        <span>Data Tools:</span>
+                        <button class="tool-btn" data-tool="transform">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button class="tool-btn" data-tool="refresh">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                        <button class="tool-btn" data-tool="model">
+                            <i class="fas fa-project-diagram"></i>
+                        </button>
+                        <button class="tool-btn" data-tool="relationships">
+                            <i class="fas fa-link"></i>
+                        </button>
+                    </div>
+
+                    <div class="tool-category">
+                        <span>Format:</span>
+                        <button class="tool-btn" data-format="theme">
+                            <i class="fas fa-palette"></i>
+                        </button>
+                        <button class="tool-btn" data-format="style">
+                            <i class="fas fa-paint-brush"></i>
+                        </button>
+                        <button class="tool-btn" data-format="export">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="tool-btn" data-format="share">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dashboard Workspace -->
+                <div class="dashboard-workspace" id="dashboardWorkspace">
+                    <!-- KPI Cards -->
+                    <div class="pbiviz-card">
+                        <div class="viz-header">
+                            <div class="viz-title">Key Performance Indicators</div>
+                            <div class="viz-actions">
+                                <button class="viz-action-btn" data-action="edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="viz-content">
+                            <div class="kpi-indicator">
+                                <div>
+                                    <div class="kpi-label">Total Revenue</div>
+                                    <div class="kpi-value">$4.8M</div>
+                                    <div class="kpi-change positive">+12.5% vs last month</div>
+                                </div>
+                            </div>
+                            <div class="kpi-indicator">
+                                <div>
+                                    <div class="kpi-label">Gross Margin</div>
+                                    <div class="kpi-value">42.3%</div>
+                                    <div class="kpi-change positive">+2.1%</div>
+                                </div>
+                            </div>
+                            <div class="kpi-indicator">
+                                <div>
+                                    <div class="kpi-label">Customer Satisfaction</div>
+                                    <div class="kpi-value">94.7</div>
+                                    <div class="kpi-change negative">-0.3%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sales Chart -->
+                    <div class="pbiviz-card">
+                        <div class="viz-header">
+                            <div class="viz-title">Monthly Sales Performance</div>
+                            <div class="viz-actions">
+                                <button class="viz-action-btn" data-action="drillthrough">
+                                    <i class="fas fa-search-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="viz-content">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Regional Performance -->
+                    <div class="pbiviz-card">
+                        <div class="viz-header">
+                            <div class="viz-title">Regional Sales Distribution</div>
+                            <div class="viz-actions">
+                                <button class="viz-action-btn" data-action="filter">
+                                    <i class="fas fa-filter"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="viz-content">
+                            <div id="regionMap"></div>
+                        </div>
+                    </div>
+
+                    <!-- Product Performance -->
+                    <div class="pbiviz-card">
+                        <div class="viz-header">
+                            <div class="viz-title">Top Performing Products</div>
+                            <div class="viz-actions">
+                                <button class="viz-action-btn" data-action="export">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="viz-content">
+                            <canvas id="productChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Customer Analytics -->
+                    <div class="pbiviz-card">
+                        <div class="viz-header">
+                            <div class="viz-title">Customer Segmentation</div>
+                            <div class="viz-actions">
+                                <button class="viz-action-btn" data-action="insights">
+                                    <i class="fas fa-lightbulb"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="viz-content">
+                            <div id="customerChart"></div>
+                        </div>
+                    </div>
+
+                    <!-- Real-time Data -->
+                    <div class="pbiviz-card">
+                        <div class="viz-header">
+                            <div class="viz-title">Real-time Sales Stream</div>
+                            <div class="viz-actions">
+                                <button class="viz-action-btn" data-action="refresh">
+                                    <i class="fas fa-sync"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="viz-content">
+                            <div id="realtimeData">
+                                <div class="data-stream">
+                                    <!-- Real-time data will appear here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters Panel -->
+                <div class="filters-panel" id="filtersPanel">
+                    <div class="filter-group">
+                        <div class="filter-title">Time Period</div>
+                        <div class="filter-options">
+                            <div class="filter-option active">Today</div>
+                            <div class="filter-option">This Week</div>
+                            <div class="filter-option">This Month</div>
+                            <div class="filter-option">Quarter to Date</div>
+                            <div class="filter-option">Year to Date</div>
+                            <div class="filter-option">Custom Range</div>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <div class="filter-title">Region</div>
+                        <div class="filter-options">
+                            <div class="filter-option active">All Regions</div>
+                            <div class="filter-option">North America</div>
+                            <div class="filter-option">Europe</div>
+                            <div class="filter-option">Asia Pacific</div>
+                            <div class="filter-option">Latin America</div>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <div class="filter-title">Product Category</div>
+                        <div class="filter-options">
+                            <div class="filter-option active">All Categories</div>
+                            <div class="filter-option">Electronics</div>
+                            <div class="filter-option">Home & Garden</div>
+                            <div class="filter-option">Clothing</div>
+                            <div class="filter-option">Sports</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Model Viewer -->
+                <div class="data-model-viewer" id="dataModelViewer">
+                    <h3>Data Model Relationships</h3>
+                    <div class="model-entities">
+                        <div class="entity-card">
+                            <div class="entity-name">Sales</div>
+                            <div class="entity-fields">
+                                <div>SalesID (PK)</div>
+                                <div>DateID (FK)</div>
+                                <div>ProductID (FK)</div>
+                                <div>CustomerID (FK)</div>
+                                <div>Quantity</div>
+                                <div>Revenue</div>
+                            </div>
+                        </div>
+                        <div class="entity-card">
+                            <div class="entity-name">Products</div>
+                            <div class="entity-fields">
+                                <div>ProductID (PK)</div>
+                                <div>ProductName</div>
+                                <div>Category</div>
+                                <div>Price</div>
+                                <div>Cost</div>
+                            </div>
+                        </div>
+                        <div class="entity-card">
+                            <div class="entity-name">Customers</div>
+                            <div class="entity-fields">
+                                <div>CustomerID (PK)</div>
+                                <div>CustomerName</div>
+                                <div>Region</div>
+                                <div>Segment</div>
+                                <div>JoinDate</div>
+                            </div>
+                        </div>
+                        <div class="entity-card">
+                            <div class="entity-name">Calendar</div>
+                            <div class="entity-fields">
+                                <div>DateID (PK)</div>
+                                <div>Date</div>
+                                <div>Month</div>
+                                <div>Quarter</div>
+                                <div>Year</div>
+                                <div>IsHoliday</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export Panel -->
+                <div class="export-panel" id="exportPanel">
+                    <h3>Export Options</h3>
+                    <div class="export-options">
+                        <div class="export-option" data-export="pdf">
+                            <i class="fas fa-file-pdf"></i>
+                            <div>Export to PDF</div>
+                        </div>
+                        <div class="export-option" data-export="excel">
+                            <i class="fas fa-file-excel"></i>
+                            <div>Export to Excel</div>
+                        </div>
+                        <div class="export-option" data-export="powerpoint">
+                            <i class="fas fa-file-powerpoint"></i>
+                            <div>Export to PowerPoint</div>
+                        </div>
+                        <div class="export-option" data-export="csv">
+                            <i class="fas fa-file-csv"></i>
+                            <div>Export to CSV</div>
+                        </div>
+                        <div class="export-option" data-export="print">
+                            <i class="fas fa-print"></i>
+                            <div>Print Dashboard</div>
+                        </div>
+                        <div class="export-option" data-export="share">
+                            <i class="fas fa-share-alt"></i>
+                            <div>Share Link</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Real Power BI Dashboard Functionality
+        class PowerBIDashboard {
+            constructor() {
+                this.currentWorkspace = 'sales-workspace';
+                this.activeFilters = {};
+                this.realTimeData = [];
+                this.init();
+            }
+
+            init() {
+                this.initializeCharts();
+                this.setupEventListeners();
+                this.startRealTimeDataStream();
+                this.loadSampleData();
+                this.setupPowerBIServiceIntegration();
+            }
+
+            initializeCharts() {
+                // Sales Chart
+                const salesCtx = document.getElementById('salesChart').getContext('2d');
+                this.salesChart = new Chart(salesCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [{
+                            label: 'Revenue ($)',
+                            data: [320000, 380000, 420000, 450000, 480000, 520000, 550000, 580000, 610000, 650000, 690000, 720000],
+                            borderColor: '#f2c811',
+                            backgroundColor: 'rgba(242, 200, 17, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }, {
+                            label: 'Target',
+                            data: [300000, 350000, 400000, 450000, 500000, 550000, 600000, 650000, 700000, 750000, 800000, 850000],
+                            borderColor: '#666',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    color: '#fff'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: '#fff',
+                                    callback: function (value) {
+                                        return '$' + (value / 1000) + 'K';
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(255,255,255,0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#fff'
+                                },
+                                grid: {
+                                    color: 'rgba(255,255,255,0.1)'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Product Chart
+                const productCtx = document.getElementById('productChart').getContext('2d');
+                this.productChart = new Chart(productCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Laptop Pro', 'Smartphone X', 'Tablet Air', 'Monitor 4K', 'Headphones', 'Keyboard'],
+                        datasets: [{
+                            label: 'Units Sold',
+                            data: [1250, 980, 750, 620, 890, 540],
+                            backgroundColor: [
+                                'rgba(242, 200, 17, 0.8)',
+                                'rgba(76, 175, 80, 0.8)',
+                                'rgba(33, 150, 243, 0.8)',
+                                'rgba(156, 39, 176, 0.8)',
+                                'rgba(255, 152, 0, 0.8)',
+                                'rgba(244, 67, 54, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(242, 200, 17, 1)',
+                                'rgba(76, 175, 80, 1)',
+                                'rgba(33, 150, 243, 1)',
+                                'rgba(156, 39, 176, 1)',
+                                'rgba(255, 152, 0, 1)',
+                                'rgba(244, 67, 54, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: '#fff'
+                                },
+                                grid: {
+                                    color: 'rgba(255,255,255,0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#fff'
+                                },
+                                grid: {
+                                    color: 'rgba(255,255,255,0.1)'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Customer Chart using Plotly
+                this.createCustomerSegmentationChart();
+            }
+
+            createCustomerSegmentationChart() {
+                const data = [{
+                    values: [35, 25, 20, 15, 5],
+                    labels: ['Enterprise', 'Small Business', 'Individual', 'Government', 'Non-Profit'],
+                    type: 'pie',
+                    hole: 0.4,
+                    marker: {
+                        colors: ['#f2c811', '#4CAF50', '#2196F3', '#9C27B0', '#FF9800']
+                    }
+                }];
+
+                const layout = {
+                    height: 250,
+                    showlegend: true,
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    plot_bgcolor: 'rgba(0,0,0,0)',
+                    font: {
+                        color: '#fff'
+                    },
+                    legend: {
+                        font: {
+                            color: '#fff'
+                        }
+                    }
+                };
+
+                Plotly.newPlot('customerChart', data, layout, { displayModeBar: false });
+            }
+
+            setupEventListeners() {
+                // Navigation
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+
+                        // Remove active class from all nav items
+                        document.querySelectorAll('.nav-item').forEach(nav => {
+                            nav.classList.remove('active');
+                        });
+
+                        // Add active class to clicked item
+                        item.classList.add('active');
+
+                        const page = item.dataset.page;
+                        const action = item.dataset.action;
+                        const tool = item.dataset.tool;
+                        const admin = item.dataset.admin;
+
+                        if (page) {
+                            this.switchWorkspace(page);
+                        } else if (action) {
+                            this.handleDataSourceAction(action);
+                        } else if (tool) {
+                            this.handleToolAction(tool);
+                        } else if (admin) {
+                            this.handleAdminAction(admin);
+                        }
+                    });
+                });
+
+                // Tool buttons
+                document.querySelectorAll('.tool-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const viz = btn.dataset.viz;
+                        const tool = btn.dataset.tool;
+                        const format = btn.dataset.format;
+
+                        if (viz) {
+                            this.addVisualization(viz);
+                        } else if (tool) {
+                            this.handleDataTool(tool);
+                        } else if (format) {
+                            this.handleFormatAction(format);
+                        }
+                    });
+                });
+
+                // Filter options
+                document.querySelectorAll('.filter-option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        option.parentElement.querySelectorAll('.filter-option').forEach(opt => {
+                            opt.classList.remove('active');
+                        });
+                        option.classList.add('active');
+                        this.applyFilters();
+                    });
+                });
+
+                // Export options
+                document.querySelectorAll('.export-option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        const exportType = option.dataset.export;
+                        this.handleExport(exportType);
+                    });
+                });
+
+                // Publish to Power BI Service
+                document.getElementById('publishToService').addEventListener('click', () => {
+                    this.publishToPowerBIService();
+                });
+
+                // Share Dashboard
+                document.getElementById('shareDashboard').addEventListener('click', () => {
+                    this.shareDashboard();
+                });
+
+                // Visualization actions
+                document.querySelectorAll('.viz-action-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const action = btn.dataset.action;
+                        this.handleVizAction(action, btn.closest('.pbiviz-card'));
+                    });
+                });
+            }
+
+            switchWorkspace(workspace) {
+                this.currentWorkspace = workspace;
+                this.showNotification(`Switched to ${workspace.replace('-', ' ')}`);
+
+                // Update dashboard content based on workspace
+                const workspaces = {
+                    'sales-workspace': 'Sales Analytics Dashboard',
+                    'finance-workspace': 'Financial Reports Dashboard',
+                    'operations-workspace': 'Operations Dashboard',
+                    'hr-workspace': 'HR Analytics Dashboard'
+                };
+
+                document.querySelector('.dashboard-workspace').innerHTML =
+                    `<h2 style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #f2c811;">
+                        ${workspaces[workspace]} - Loading...
+                    </h2>`;
+
+                // Simulate workspace loading
+                setTimeout(() => {
+                    this.loadWorkspaceData(workspace);
+                }, 1000);
+            }
+
+            loadWorkspaceData(workspace) {
+                // In a real implementation, this would load actual data from Power BI service
+                this.showNotification(`${workspace.replace('-', ' ')} data loaded successfully`);
+
+                // Reload the dashboard with workspace-specific visualizations
+                location.reload();
+            }
+
+            handleDataSourceAction(source) {
+                const sources = {
+                    'sql-server': 'SQL Server Database',
+                    'excel-files': 'Excel Files',
+                    'sharepoint': 'SharePoint Lists',
+                    'azure-sql': 'Azure SQL Database',
+                    'web-api': 'Web API Endpoint'
+                };
+
+                this.showNotification(`Connecting to ${sources[source]}...`);
+
+                // Simulate data source connection
+                setTimeout(() => {
+                    this.showNotification(`Successfully connected to ${sources[source]}`, 'success');
+                    this.showDataImportDialog(source);
+                }, 1500);
+            }
+
+            handleToolAction(tool) {
+                const tools = {
+                    'power-query': 'Power Query Editor',
+                    'dax-editor': 'DAX Formula Editor',
+                    'data-model': 'Data Model Viewer',
+                    'performance': 'Performance Analyzer'
+                };
+
+                this.showNotification(`Opening ${tools[tool]}...`);
+
+                if (tool === 'data-model') {
+                    document.getElementById('dataModelViewer').classList.toggle('visible');
+                }
+            }
+
+            handleAdminAction(action) {
+                const adminActions = {
+                    'gateway': 'On-premises Data Gateway',
+                    'capacity': 'Premium Capacity Monitoring',
+                    'audit': 'Power BI Audit Logs',
+                    'security': 'Row Level Security'
+                };
+
+                this.showNotification(`Opening ${adminActions[action]} panel...`);
+
+                // Show admin panel with specific configuration
+                this.showAdminPanel(action);
+            }
+
+            addVisualization(type) {
+                const vizTypes = {
+                    'bar': 'Bar Chart',
+                    'line': 'Line Chart',
+                    'pie': 'Pie Chart',
+                    'scatter': 'Scatter Plot',
+                    'map': 'Geographic Map',
+                    'table': 'Data Table',
+                    'kpi': 'KPI Card'
+                };
+
+                this.showNotification(`Adding ${vizTypes[type]} visualization to dashboard...`);
+
+                // In a real Power BI implementation, this would add a new visualization
+                // to the canvas and open the fields pane
+                setTimeout(() => {
+                    this.showNotification(`${vizTypes[type]} added successfully`, 'success');
+                }, 500);
+            }
+
+            handleDataTool(tool) {
+                if (tool === 'refresh') {
+                    this.refreshData();
+                } else if (tool === 'transform') {
+                    this.openPowerQueryEditor();
+                } else if (tool === 'model') {
+                    this.openDataModelViewer();
+                } else if (tool === 'relationships') {
+                    this.showRelationships();
+                }
+            }
+
+            handleFormatAction(action) {
+                if (action === 'theme') {
+                    this.changeTheme();
+                } else if (action === 'style') {
+                    this.openFormatPane();
+                } else if (action === 'export') {
+                    this.showExportPanel();
+                } else if (action === 'share') {
+                    this.shareDashboard();
+                }
+            }
+
+            refreshData() {
+                this.showNotification('Refreshing data from all sources...');
+
+                // Simulate data refresh
+                setTimeout(() => {
+                    this.updateChartsWithNewData();
+                    this.showNotification('Data refreshed successfully!', 'success');
+                }, 2000);
+            }
+
+            updateChartsWithNewData() {
+                // Update sales chart with new data
+                const newData = Array.from({ length: 12 }, () => Math.floor(Math.random() * 400000) + 300000);
+                this.salesChart.data.datasets[0].data = newData;
+                this.salesChart.update();
+
+                // Update product chart
+                const productData = Array.from({ length: 6 }, () => Math.floor(Math.random() * 800) + 200);
+                this.productChart.data.datasets[0].data = productData;
+                this.productChart.update();
+
+                // Update KPIs
+                this.updateKPIs();
+            }
+
+            updateKPIs() {
+                // Update KPI values with new data
+                const revenue = Math.floor(Math.random() * 2000000) + 3000000;
+                const margin = (Math.random() * 10 + 35).toFixed(1);
+                const satisfaction = (Math.random() * 3 + 92).toFixed(1);
+
+                document.querySelectorAll('.kpi-value')[0].textContent = `$${(revenue / 1000000).toFixed(1)}M`;
+                document.querySelectorAll('.kpi-value')[1].textContent = `${margin}%`;
+                document.querySelectorAll('.kpi-value')[2].textContent = satisfaction;
+            }
+
+            applyFilters() {
+                const timeFilter = document.querySelector('[data-filter="time"]')?.textContent || 'This Month';
+                const regionFilter = document.querySelector('[data-filter="region"]')?.textContent || 'All Regions';
+                const categoryFilter = document.querySelector('[data-filter="category"]')?.textContent || 'All Categories';
+
+                this.activeFilters = {
+                    time: timeFilter,
+                    region: regionFilter,
+                    category: categoryFilter
+                };
+
+                this.showNotification(`Filters applied: ${timeFilter}, ${regionFilter}, ${categoryFilter}`);
+
+                // Update charts with filtered data
+                this.updateChartsWithFilteredData();
+            }
+
+            updateChartsWithFilteredData() {
+                // In a real implementation, this would filter the data model
+                // and update all visualizations accordingly
+                this.salesChart.update();
+                this.productChart.update();
+            }
+
+            showExportPanel() {
+                document.getElementById('exportPanel').classList.toggle('visible');
+            }
+
+            handleExport(type) {
+                const exportTypes = {
+                    'pdf': 'PDF Report',
+                    'excel': 'Excel Workbook',
+                    'powerpoint': 'PowerPoint Presentation',
+                    'csv': 'CSV Data',
+                    'print': 'Printed Report',
+                    'share': 'Shared Link'
+                };
+
+                this.showNotification(`Exporting dashboard as ${exportTypes[type]}...`);
+
+                // Simulate export process
+                setTimeout(() => {
+                    this.showNotification(`${exportTypes[type]} exported successfully!`, 'success');
+                    document.getElementById('exportPanel').classList.remove('visible');
+                }, 1500);
+            }
+
+            publishToPowerBIService() {
+                this.showNotification('Publishing dashboard to Power BI Service...');
+
+                // Simulate publishing process
+                setTimeout(() => {
+                    this.showNotification('Dashboard published successfully to Power BI Service!', 'success');
+                    this.showNotification('Dashboard is now available at: https://app.powerbi.com/groups/me/dashboards', 'info');
+                }, 2000);
+            }
+
+            shareDashboard() {
+                this.showNotification('Generating shareable link...');
+
+                // In a real implementation, this would use Power BI REST API
+                // to create a shareable link or embed code
+                setTimeout(() => {
+                    const link = 'https://app.powerbi.com/view?r=eyJrIjoiNDQzNjgxOTctYjU5Mi00...';
+                    this.showShareDialog(link);
+                }, 1000);
+            }
+
+            showShareDialog(link) {
+                // Create share dialog
+                const dialog = document.createElement('div');
+                dialog.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(30,30,30,0.95);
+                    padding: 30px;
+                    border-radius: 12px;
+                    z-index: 1000;
+                    border: 2px solid #f2c811;
+                    min-width: 400px;
+                `;
+
+                dialog.innerHTML = `
+                    <h3 style="color: #f2c811; margin-bottom: 20px;">Share Dashboard</h3>
+                    <p style="margin-bottom: 15px;">Share this link with colleagues:</p>
+                    <input type="text" value="${link}" readonly 
+                           style="width: 100%; padding: 10px; background: #222; color: #fff; border: 1px solid #666; border-radius: 6px; margin-bottom: 20px;">
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="navigator.clipboard.writeText('${link}'); this.textContent='Copied!';" 
+                                style="padding: 10px 20px; background: #f2c811; color: #000; border: none; border-radius: 6px; cursor: pointer;">
+                            Copy Link
+                        </button>
+                        <button onclick="this.parentElement.parentElement.remove()" 
+                                style="padding: 10px 20px; background: #666; color: #fff; border: none; border-radius: 6px; cursor: pointer;">
+                            Close
+                        </button>
+                    </div>
+                `;
+
+                document.body.appendChild(dialog);
+            }
+
+            startRealTimeDataStream() {
+                // Simulate real-time data updates
+                setInterval(() => {
+                    this.addRealTimeDataPoint();
+                }, 3000);
+            }
+
+            addRealTimeDataPoint() {
+                const products = ['Laptop Pro', 'Smartphone X', 'Tablet Air', 'Monitor 4K'];
+                const regions = ['North America', 'Europe', 'Asia Pacific', 'Latin America'];
+                const product = products[Math.floor(Math.random() * products.length)];
+                const region = regions[Math.floor(Math.random() * regions.length)];
+                const amount = Math.floor(Math.random() * 5000) + 1000;
+
+                this.realTimeData.unshift({
+                    product,
+                    region,
+                    amount,
+                    time: new Date().toLocaleTimeString()
+                });
+
+                // Keep only last 10 entries
+                if (this.realTimeData.length > 10) {
+                    this.realTimeData.pop();
+                }
+
+                this.updateRealTimeDisplay();
+            }
+
+            updateRealTimeDisplay() {
+                const container = document.querySelector('.data-stream');
+                if (!container) return;
+
+                container.innerHTML = this.realTimeData.map(item => `
+                    <div style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between;">
+                        <span>${item.product} - ${item.region}</span>
+                        <span style="color: #f2c811;">$${item.amount.toLocaleString()}</span>
+                        <span style="color: #666; font-size: 0.9rem;">${item.time}</span>
+                    </div>
+                `).join('');
+            }
+
+            showNotification(message, type = 'info') {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = 'notification-message';
+                notification.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                `;
+
+                // Style the notification
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? 'rgba(76, 175, 80, 0.9)' :
+                        type === 'error' ? 'rgba(244, 67, 54, 0.9)' :
+                            'rgba(33, 150, 243, 0.9)'};
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    z-index: 1000;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                    animation: slideIn 0.3s ease;
+                `;
+
+                // Add to body
+                document.body.appendChild(notification);
+
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    notification.style.animation = 'fadeOut 0.5s ease forwards';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 500);
+                }, 3000);
+            }
+
+            loadSampleData() {
+                // Load additional sample data
+                setTimeout(() => {
+                    this.showNotification('Sample sales data loaded successfully', 'success');
+                }, 500);
+            }
+
+            setupPowerBIServiceIntegration() {
+                // Simulate Power BI service connection
+                setTimeout(() => {
+                    this.showNotification('Connected to Power BI Service', 'success');
+                }, 1000);
+            }
+
+            openPowerQueryEditor() {
+                this.showNotification('Opening Power Query Editor...');
+                // In a real implementation, this would open the Power Query interface
+            }
+
+            openDataModelViewer() {
+                document.getElementById('dataModelViewer').classList.toggle('visible');
+            }
+
+            showRelationships() {
+                this.showNotification('Showing data model relationships...');
+                this.openDataModelViewer();
+            }
+
+            changeTheme() {
+                const themes = ['Dark', 'Light', 'Colorful', 'High Contrast'];
+                const theme = themes[Math.floor(Math.random() * themes.length)];
+                this.showNotification(`Changing theme to ${theme}...`);
+
+                // Simulate theme change
+                setTimeout(() => {
+                    this.showNotification(`Theme changed to ${theme}`, 'success');
+                }, 500);
+            }
+
+            openFormatPane() {
+                this.showNotification('Opening formatting pane...');
+                // In a real implementation, this would open the formatting pane
+            }
+
+            showDataImportDialog(source) {
+                const dialog = document.createElement('div');
+                dialog.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(30,30,30,0.95);
+                    padding: 30px;
+                    border-radius: 12px;
+                    z-index: 1000;
+                    border: 2px solid #f2c811;
+                    min-width: 500px;
+                `;
+
+                dialog.innerHTML = `
+                    <h3 style="color: #f2c811; margin-bottom: 20px;">Import Data from ${source}</h3>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px;">Connection String/URL:</label>
+                        <input type="text" placeholder="Enter connection details" 
+                               style="width: 100%; padding: 10px; background: #222; color: #fff; border: 1px solid #666; border-radius: 6px;">
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button onclick="powerBI.importData()" 
+                                style="padding: 10px 20px; background: #f2c811; color: #000; border: none; border-radius: 6px; cursor: pointer;">
+                            Import Data
+                        </button>
+                        <button onclick="this.parentElement.parentElement.remove()" 
+                                style="padding: 10px 20px; background: #666; color: #fff; border: none; border-radius: 6px; cursor: pointer;">
+                            Cancel
+                        </button>
+                    </div>
+                `;
+
+                document.body.appendChild(dialog);
+            }
+
+            importData() {
+                this.showNotification('Importing data...');
+                setTimeout(() => {
+                    this.showNotification('Data imported successfully! Refresh visualizations to see updates.', 'success');
+                    document.querySelector('[style*="position: fixed"]').remove();
+                }, 2000);
+            }
+
+            showAdminPanel(panel) {
+                const panelContent = {
+                    'gateway': 'On-premises Data Gateway Configuration',
+                    'capacity': 'Premium Capacity Monitoring Dashboard',
+                    'audit': 'Power BI Activity Audit Logs',
+                    'security': 'Row Level Security Configuration'
+                };
+
+                const dialog = document.createElement('div');
+                dialog.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(30,30,30,0.95);
+                    padding: 30px;
+                    border-radius: 12px;
+                    z-index: 1000;
+                    border: 2px solid #f2c811;
+                    min-width: 600px;
+                    max-width: 800px;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                `;
+
+                dialog.innerHTML = `
+                    <h3 style="color: #f2c811; margin-bottom: 20px;">${panelContent[panel]}</h3>
+                    <div style="margin-bottom: 20px; color: #aaa;">
+                        ${this.getAdminPanelContent(panel)}
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button onclick="this.parentElement.parentElement.remove()" 
+                                style="padding: 10px 20px; background: #666; color: #fff; border: none; border-radius: 6px; cursor: pointer;">
+                            Close
+                        </button>
+                    </div>
+                `;
+
+                document.body.appendChild(dialog);
+            }
+
+            getAdminPanelContent(panel) {
+                const contents = {
+                    'gateway': `
+                        <h4>Gateway Status: <span style="color: #4CAF50;">Online</span></h4>
+                        <p>Last refresh: 5 minutes ago</p>
+                        <p>Connected data sources: 12</p>
+                        <p>Gateway cluster: Primary-EastUS</p>
+                        <button style="margin-top: 15px; padding: 8px 16px; background: #f2c811; color: #000; border: none; border-radius: 6px; cursor: pointer;">
+                            Manage Gateway Clusters
+                        </button>
+                    `,
+                    'capacity': `
+                        <h4>Premium Capacity: P1</h4>
+                        <p>Usage: 65%</p>
+                        <p>Available memory: 12.5 GB</p>
+                        <p>Peak load: 78% (Yesterday, 2:00 PM)</p>
+                        <div style="background: #222; height: 20px; border-radius: 10px; margin: 15px 0;">
+                            <div style="background: #f2c811; width: 65%; height: 100%; border-radius: 10px;"></div>
+                        </div>
+                    `,
+                    'audit': `
+                        <h4>Recent Activity</h4>
+                        <div style="max-height: 300px; overflow-y: auto;">
+                            <div style="padding: 8px; border-bottom: 1px solid #444;">
+                                <strong>User:</strong> admin@company.com<br>
+                                <strong>Action:</strong> Viewed Dashboard<br>
+                                <strong>Time:</strong> 2 minutes ago
+                            </div>
+                            <div style="padding: 8px; border-bottom: 1px solid #444;">
+                                <strong>User:</strong> jane.doe@company.com<br>
+                                <strong>Action:</strong> Exported Report<br>
+                                <strong>Time:</strong> 15 minutes ago
+                            </div>
+                            <div style="padding: 8px; border-bottom: 1px solid #444;">
+                                <strong>User:</strong> john.smith@company.com<br>
+                                <strong>Action:</strong> Refreshed Dataset<br>
+                                <strong>Time:</strong> 1 hour ago
+                            </div>
+                        </div>
+                    `,
+                    'security': `
+                        <h4>Row Level Security Roles</h4>
+                        <div style="margin: 15px 0;">
+                            <strong>Sales Manager Role:</strong> Can view all sales data<br>
+                            <strong>Regional Manager Role:</strong> Can view data for assigned region only<br>
+                            <strong>Finance Role:</strong> Can view financial data only<br>
+                        </div>
+                        <button style="padding: 8px 16px; background: #f2c811; color: #000; border: none; border-radius: 6px; cursor: pointer;">
+                            Manage RLS Roles
+                        </button>
+                    `
+                };
+
+                return contents[panel] || 'Admin panel content not available';
+            }
+
+            handleVizAction(action, card) {
+                const actions = {
+                    'edit': 'Editing visualization',
+                    'drillthrough': 'Drilling through data',
+                    'filter': 'Applying filters',
+                    'export': 'Exporting visualization',
+                    'insights': 'Getting AI insights',
+                    'refresh': 'Refreshing visualization'
+                };
+
+                this.showNotification(actions[action]);
+
+                if (action === 'insights') {
+                    this.showAIIndights(card);
+                }
+            }
+
+            showAIIndights(card) {
+                const insights = [
+                    "Sales peak between 2-4 PM daily",
+                    "Product A and B are frequently purchased together",
+                    "North region shows 25% higher conversion rate",
+                    "Weekend sales are 40% higher than weekdays",
+                    "Customer segment C has highest lifetime value"
+                ];
+
+                const insight = insights[Math.floor(Math.random() * insights.length)];
+
+                const insightDiv = document.createElement('div');
+                insightDiv.style.cssText = `
+                    position: absolute;
+                    background: rgba(30,30,30,0.95);
+                    border: 2px solid #4CAF50;
+                    padding: 15px;
+                    border-radius: 8px;
+                    z-index: 100;
+                    max-width: 300px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+                `;
+
+                insightDiv.innerHTML = `
+                    <h4 style="color: #4CAF50; margin-bottom: 10px;">AI Insight</h4>
+                    <p>${insight}</p>
+                    <button onclick="this.parentElement.remove()" 
+                            style="margin-top: 10px; padding: 5px 10px; background: #666; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+                        Close
+                    </button>
+                `;
+
+                card.querySelector('.viz-content').appendChild(insightDiv);
+
+                setTimeout(() => {
+                    if (insightDiv.parentNode) {
+                        insightDiv.remove();
+                    }
+                }, 5000);
+            }
+        }
+
+        // Initialize the Power BI Dashboard
+        let powerBI;
+        document.addEventListener('DOMContentLoaded', () => {
+            powerBI = new PowerBIDashboard();
+
+            // Add CSS for animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeOut {
+                    from { opacity: 1; transform: translateY(0); }
+                    to { opacity: 0; transform: translateY(-20px); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+
+</html>
